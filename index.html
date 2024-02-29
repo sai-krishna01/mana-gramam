@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>B-tech notes/source</title>
+  </head>
+  <body>
+    <link rel="stylesheet" href="style.css">
+    <div class="hero" id="hero">
+    <nav>
+        <div class="nav">
+          <a href="#">home</a>
+          <a onclick="contact()" href="#">contact us</a>
+          <a onclick="openlogin()" href="#">login</a>
+          <a class="sign" href="#">create your account</a>
+        </div>
+      </nav>
+    </div>
+      <h1 class="h1">notes for B-tech sourec website along with practice sites</h1>
+        <div id="login-form" class="login-form">
+          <div class="#">
+            <form action="">
+              <h2 class="h2" onclick="closelogin()" ><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-x" viewBox="0 0 16 16">
+                <path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708"/>
+              </svg></h2>
+              <div><input required type="text" placeholder="enter email"></div>
+              <div><input required type="password" placeholder="enter password"></div>
+              <button class="btn">Login now</button>
+            </form>
+          </div>
+        </div>
+
+        <div id="contactus" class="contactus">
+          <form id="form">
+            <h2 class="h2" onclick="closecontact()" ><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-x" viewBox="0 0 16 16">
+              <path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708"/>
+            </svg></h2>
+            <div class="fieldhide">
+              <label for="to_name">to_name</label>
+              <input type="text" name="to_name" id="to_name" value="sai krishna" readonly>
+            </div>
+            
+              <div class="field">
+                <input type="text" name="from_name" id="from_name" placeholder="enter your name">
+              </div>
+              <div class="field">
+                <input type="text" name="email_id" id="email_id" placeholder="enter your email">
+              </div>
+              <div class="field">
+                <input type="text" name="message" id="message" placeholder="enter your message">
+              </div>
+            
+              <input type="submit" id="button" value="Send Email" class="btn" >
+            </form>
+        </div>
+<script src="app.js"></script>
+
+      
+<script type="text/javascript"
+src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+
+<script type="text/javascript">
+emailjs.init('QD0PyZymzpU7akMs-')
+</script>
+
+  </body>
+</html>
