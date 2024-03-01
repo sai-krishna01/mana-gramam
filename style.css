@@ -11,7 +11,7 @@ font-size: larger;
 transition: 0.3s;
 }
 
-.login-form, .contactus{
+.login-form, .contactus, .signup-form{
     border-radius: 14px;
     margin: 50px auto;
     width: 380px;
@@ -40,7 +40,7 @@ text-align: center;
 color: rgb(65, 105, 225);
 }
 nav {
-width: 100%;
+width: 80% auto;
 margin: 25px;
 }
 .card {
@@ -73,7 +73,7 @@ transition: all 0.3s ;
 text-decoration: none;
 transition: 0.3s;
 display: flex;
-justify-content: space-evenly;
+justify-content: space-between;
 }
 
 h2:hover{

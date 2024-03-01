@@ -27,6 +27,19 @@
       contactus.style.display='none'
       }
 
+      function signup(){
+        let card=document.getElementById('hero')
+      let signup=document.getElementById('signup-form')
+      card.style.display='none'
+      signup.style.display='block'
+      }
+
+      function closesignup(){
+        let card=document.getElementById('hero')
+      let signup=document.getElementById('signup-form')
+      card.style.display='block'
+      signup.style.display='none'
+      }
 
       const btn = document.getElementById('button');
 
