@@ -61,8 +61,10 @@ transition: all 0.3s ;
 .nav {
 text-decoration: none;
 transition: 0.3s;
+
 display: flex;
-justify-content: space-between;
+justify-content: center;
+align-items: center;
 }
 
 h2:hover{
