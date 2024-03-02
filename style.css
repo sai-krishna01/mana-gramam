@@ -13,7 +13,7 @@ transition: 0.3s;
 
 .login-form, .contactus, .signup-form{
     border-radius: 14px;
-    margin: 50px auto;
+    margin: 80px auto;
     width: 380px;
     padding: 8px;
     display: none;
@@ -43,18 +43,7 @@ nav {
 width: 80% auto;
 margin: 25px;
 }
-.card {
-width: 360px;
-}
-.img {
-width: 100%;
-cursor: pointer;
-transition: 0.5s;
-}
-.img:hover {
-transform: scale(1.1);
-transition: 0.5s;
-}
+
 a {
 text-decoration: none;
 font-size: 15px;
@@ -78,4 +67,37 @@ justify-content: space-between;
 
 h2:hover{
     color: red;
+}
+.ig{
+    color: black;
+}
+.ig:hover{
+    color: rgb(216, 28, 28);
+}
+.container{
+    display: flex;
+}
+.card{
+    display: flex;
+    justify-content: space-evenly;
+}
+.card-2{
+    width: 360px;
+    display: flex;
+    justify-content: space-evenly;
+    margin: 12px;
+}
+.img{
+    width: 100%;
+    border-radius: 16px;
+}
+.img:hover{
+    scale: 1.1;
+}
+.par{
+    width: 95%;
+    text-align: center;
+    justify-content: center;
+    margin: 12px;
+    margin-bottom: 16px;
 }
