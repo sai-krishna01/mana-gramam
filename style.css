@@ -104,4 +104,8 @@ h2:hover{
     margin-bottom: 16px;
 }
 
-
+h3{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
