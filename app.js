@@ -79,6 +79,7 @@
   let img = document.getElementById('img');
 
   const images = [
+    "green (1).jpg",
     "green (2).jpg",
     "green (3).jpg",
     "green (5).jpg",
@@ -111,4 +112,4 @@
     currentIndex = (currentIndex + 1) % images.length;
   }
   changeImage();
-  setInterval(changeImage, 5000);
+  setInterval(changeImage, 3000);
