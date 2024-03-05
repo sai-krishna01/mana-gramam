@@ -14,10 +14,14 @@ transition: 0.3s;
 .login-form, .contactus, .signup-form{
     border-radius: 14px;
     margin: 80px auto;
-    width: 380px;
+    width: 280px;
     padding: 8px;
     display: none;
     transition: 0.3s;
+}
+..contactus{
+    display: flex;
+    flex-wrap: wrap;
 }
 input, .btn{
 width: 100%;
