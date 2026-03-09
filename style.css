@@ -45,7 +45,6 @@ a {
   font-weight: 700;
 }
 .contactus{
-    display: flex;
     flex-wrap: wrap;
 
 a:hover {
