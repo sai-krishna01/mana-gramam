@@ -41,6 +41,18 @@ const formStatus = document.getElementById('form-status');
 const issueImageInput = document.getElementById('issue-image');
 const issuePreview = document.getElementById('issue-preview');
 
+function setStatus(message) {
+  if (formStatus) formStatus.textContent = message;
+}
+
+
+function withTimeout(promise, ms) {
+  return Promise.race([
+    promise,
+    new Promise((_, reject) => setTimeout(() => reject(new Error('timeout')), ms)),
+  ]);
+}
+
 function resetIssuePreview() {
   if (!issuePreview) return;
   issuePreview.src = '';
@@ -65,32 +77,51 @@ if (issueImageInput && issuePreview) {
 }
 
 if (form && btn) {
-  form.addEventListener('submit', (event) => {
+  form.addEventListener('submit', async (event) => {
     event.preventDefault();
-    btn.value = 'Sending...';
-    if (formStatus) formStatus.textContent = '';
+    btn.value = 'Submitting...';
+    setStatus('Submitting your issue...');
 
-    btn.value = 'Sending...';
+    const payload = {
+      from_name: document.getElementById('from_name')?.value?.trim() || '',
+      email_id: document.getElementById('email_id')?.value?.trim() || '',
+      message: document.getElementById('message')?.value?.trim() || '',
+      image_name: issueImageInput?.files?.[0]?.name || '',
+      createdAt: new Date().toISOString(),
+      source: 'website-form',
+    };
 
-    if (!window.emailjs) {
-      btn.value = 'Submit issue';
-      if (formStatus) formStatus.textContent = 'Saved locally. Email service is unavailable right now.';
-      form.reset();
-      resetIssuePreview();
-      return;
+    let submitted = false;
+
+    if (window.firebaseIssueService?.submitIssueToFirebase) {
+      try {
+        await withTimeout(window.firebaseIssueService.submitIssueToFirebase(payload), 6000);
+        submitted = true;
+        setStatus('Issue submitted to Firebase successfully.');
+      } catch (error) {
+        setStatus('Firebase submit failed. Trying email fallback...');
+      }
     }
 
-    emailjs.sendForm('service_eadh9rd', 'template_4c4536t', form).then(
-      () => {
-        btn.value = 'Submit issue';
-        if (formStatus) formStatus.textContent = 'Submitted successfully. We will contact you soon.';
-        form.reset();
-        resetIssuePreview();
-      },
-      () => {
-        btn.value = 'Submit issue';
-        if (formStatus) formStatus.textContent = 'Submission failed. Please try again.';
+    if (!submitted && window.emailjs) {
+      try {
+        await withTimeout(emailjs.sendForm('service_eadh9rd', 'template_4c4536t', form), 6000);
+        submitted = true;
+        setStatus('Issue submitted successfully via email.');
+      } catch (error) {
+        setStatus('Email submit failed. Saving locally...');
       }
-    );
+    }
+
+    if (!submitted) {
+      const existing = JSON.parse(localStorage.getItem('pendingIssues') || '[]');
+      existing.push(payload);
+      localStorage.setItem('pendingIssues', JSON.stringify(existing));
+      setStatus('Could not reach server. Issue saved locally on this device.');
+    }
+
+    btn.value = 'Submit issue';
+    form.reset();
+    resetIssuePreview();
   });
 }

@@ -150,6 +150,39 @@
       </section>
     </main>
 
+    <script type="module">
+      import { initializeApp } from 'https://www.gstatic.com/firebasejs/12.10.0/firebase-app.js';
+      import { getAnalytics } from 'https://www.gstatic.com/firebasejs/12.10.0/firebase-analytics.js';
+      import {
+        getFirestore,
+        addDoc,
+        collection,
+        serverTimestamp,
+      } from 'https://www.gstatic.com/firebasejs/12.10.0/firebase-firestore.js';
+
+      const firebaseConfig = {
+        apiKey: 'AIzaSyDv-AZDvte8I9jlwwuTiPReQJR_6eOD1SQ',
+        authDomain: 'mana-gramam-fb94e.firebaseapp.com',
+        projectId: 'mana-gramam-fb94e',
+        storageBucket: 'mana-gramam-fb94e.firebasestorage.app',
+        messagingSenderId: '832992186240',
+        appId: '1:832992186240:web:191497b50f66343b3d7b65',
+        measurementId: 'G-TELNVLJ4H1',
+      };
+
+      const app = initializeApp(firebaseConfig);
+      getAnalytics(app);
+      const db = getFirestore(app);
+
+      window.firebaseIssueService = {
+        submitIssueToFirebase: async (payload) => {
+          await addDoc(collection(db, 'issues'), {
+            ...payload,
+            createdAtServer: serverTimestamp(),
+          });
+        },
+      };
+    </script>
     <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
     <script src="app.js"></script>
   </body>
