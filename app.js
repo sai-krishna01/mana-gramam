@@ -1,67 +1,95 @@
+const sections = Array.from(document.querySelectorAll('.page-section'));
+const navButtons = Array.from(document.querySelectorAll('[data-page-target]'));
+
 function showPage(pageId) {
-  const pages = document.querySelectorAll('.page-section');
-  pages.forEach((page) => {
-    page.classList.toggle('active', page.id === pageId);
+  let found = false;
+
+  sections.forEach((section) => {
+    const isActive = section.id === pageId;
+    section.classList.toggle('active', isActive);
+    if (isActive) found = true;
   });
+
+  navButtons.forEach((button) => {
+    const isActive = button.dataset.pageTarget === pageId;
+    button.classList.toggle('active', isActive);
+    button.setAttribute('aria-current', isActive ? 'page' : 'false');
+  });
+
+  if (!found && sections.length > 0) {
+    sections[0].classList.add('active');
+    navButtons[0]?.classList.add('active');
+  }
 
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
+navButtons.forEach((button) => {
+  button.addEventListener('click', () => {
+    const pageId = button.dataset.pageTarget;
+    if (pageId) showPage(pageId);
+  });
+});
+
+if (window.emailjs) {
+  emailjs.init('QD0PyZymzpU7akMs-');
+}
+
 const btn = document.getElementById('button');
 const form = document.getElementById('form');
+const formStatus = document.getElementById('form-status');
 const issueImageInput = document.getElementById('issue-image');
 const issuePreview = document.getElementById('issue-preview');
+
+function resetIssuePreview() {
+  if (!issuePreview) return;
+  issuePreview.src = '';
+  issuePreview.style.display = 'none';
+}
 
 if (issueImageInput && issuePreview) {
   issueImageInput.addEventListener('change', (event) => {
     const [file] = event.target.files || [];
     if (!file) {
-      issuePreview.src = '';
-      issuePreview.style.display = 'none';
+      resetIssuePreview();
       return;
     }
 
-  if (hero) hero.style.display = 'block';
-  if (content) content.style.display = 'grid';
-
-  [login, signup, contact].forEach((section) => {
-    if (section) section.style.display = 'none';
+    const reader = new FileReader();
+    reader.onload = (loadEvent) => {
+      issuePreview.src = String(loadEvent.target?.result || '');
+      issuePreview.style.display = 'block';
+    };
+    reader.readAsDataURL(file);
   });
 }
 
 if (form && btn) {
-  form.addEventListener('submit', function (event) {
+  form.addEventListener('submit', (event) => {
     event.preventDefault();
+    btn.value = 'Sending...';
+    if (formStatus) formStatus.textContent = '';
 
     btn.value = 'Sending...';
 
     if (!window.emailjs) {
-      btn.value = 'Raise your issue';
-      alert('Issue saved locally. Email service unavailable right now.');
+      btn.value = 'Submit issue';
+      if (formStatus) formStatus.textContent = 'Saved locally. Email service is unavailable right now.';
       form.reset();
-      if (issuePreview) {
-        issuePreview.src = '';
-        issuePreview.style.display = 'none';
-      }
+      resetIssuePreview();
       return;
     }
 
-    const serviceID = 'service_eadh9rd';
-    const templateID = 'template_4c4536t';
-
-    emailjs.sendForm(serviceID, templateID, this).then(
+    emailjs.sendForm('service_eadh9rd', 'template_4c4536t', form).then(
       () => {
-        btn.value = 'Raise your issue';
-        alert('Form submitted successfully! We will contact you soon.');
+        btn.value = 'Submit issue';
+        if (formStatus) formStatus.textContent = 'Submitted successfully. We will contact you soon.';
         form.reset();
-        if (issuePreview) {
-          issuePreview.src = '';
-          issuePreview.style.display = 'none';
-        }
+        resetIssuePreview();
       },
       () => {
-        btn.value = 'Raise your issue';
-        alert('Something went wrong while sending your request. Please try again.');
+        btn.value = 'Submit issue';
+        if (formStatus) formStatus.textContent = 'Submission failed. Please try again.';
       }
     );
   });
