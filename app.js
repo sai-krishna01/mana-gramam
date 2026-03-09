@@ -25,6 +25,14 @@ function contact() {
   contactus.style.display = 'block';
 }
 
+      function contact(){
+        let card=document.getElementById('hero')
+      let contactus=document.getElementById('contactus')
+      let cont=document.getElementById('content')
+      cont.style.display='none'
+      card.style.display='none'
+      contactus.style.display='flex'
+      }
 function closecontact() {
   const card = document.getElementById('hero');
   const contactus = document.getElementById('contactus');
@@ -61,6 +69,28 @@ if (form && btn) {
 
     btn.value = 'Sending...';
 
+      const btn = document.getElementById('button');
+      const form = document.getElementById('form');
+
+      if (form && btn) {
+        form.addEventListener('submit', function(event) {
+         event.preventDefault();
+      
+         btn.value = 'Sending...';
+      
+         const serviceID = 'service_eadh9rd';
+         const templateID = 'template_4c4536t';
+      
+         emailjs.sendForm(serviceID, templateID, this)
+          .then(() => {
+            btn.value = 'Send Email';
+            alert('Form submitted successfully! We will contact you soon.');
+          }, (err) => {
+            btn.value = 'Send Email';
+            alert(JSON.stringify(err));
+          });
+        });
+      }
     const serviceID = 'service_eadh9rd';
     const templateID = 'template_4c4536t';
 

@@ -44,6 +44,9 @@ a {
   color: var(--primary);
   font-weight: 700;
 }
+.contactus{
+    display: flex;
+    flex-wrap: wrap;
 
 a:hover {
   color: var(--primary-dark);
