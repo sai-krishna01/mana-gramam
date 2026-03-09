@@ -20,10 +20,6 @@ body {
   color: var(--text);
 }
 
-.fieldhide {
-  display: none;
-}
-
 .hero {
   padding: 20px clamp(16px, 4vw, 48px) 8px;
 }
@@ -36,9 +32,12 @@ nav,
   margin-inline: auto;
 }
 
-.nav {
+.nav-shell {
   display: flex;
-  justify-content: flex-end;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
 }
 
 .action-link {
@@ -93,16 +92,27 @@ h1 {
   gap: 22px;
 }
 
+.page-section.active {
+  display: grid;
+}
+
 h3 {
   text-align: center;
   margin: 6px 0 0;
 }
 
-.story-card {
+.story-card,
+.login-form,
+.contactus,
+.signup-form {
   background: var(--surface);
   border-radius: 18px;
   box-shadow: var(--shadow);
   padding: clamp(14px, 2.3vw, 24px);
+}
+
+.panel-visible {
+  display: block;
 }
 
 .card-2 {
@@ -115,13 +125,19 @@ h3 {
   width: 100%;
   display: block;
   border-radius: 14px;
-  transition: transform 0.25s ease;
   aspect-ratio: 16 / 10;
   object-fit: cover;
 }
 
-.img:hover {
-  transform: scale(1.02);
+.gallery-grid {
+  margin-top: 16px;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 12px;
+}
+
+.gallery-item {
+  height: 160px;
 }
 
 .par {
@@ -130,32 +146,26 @@ h3 {
   color: #213529;
 }
 
-.h2 {
-  display: flex;
-  justify-content: flex-end;
-  margin: 0;
-  cursor: pointer;
-  font-size: larger;
+.three-col {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px;
 }
 
-.login-form,
-.contactus,
-.signup-form {
-  border-radius: 14px;
-  margin: 40px auto;
-  width: min(420px, 92vw);
-  padding: 16px;
-  background: #fff;
-  box-shadow: var(--shadow);
+.three-col article {
+  background: #f6fbf7;
+  border: 1px solid #d9e4dc;
+  border-radius: 12px;
+  padding: 12px;
+}
+
+.fieldhide {
   display: none;
 }
 
-.contactus {
-  flex-wrap: wrap;
-}
-
 input,
-.btn {
+.btn,
+.label {
   width: 100%;
   min-height: 42px;
   text-align: left;
@@ -165,8 +175,16 @@ input,
   border: 1px solid #d9e4dc;
 }
 
+.label {
+  border: none;
+  margin-top: 0;
+  padding: 0;
+  min-height: auto;
+  font-weight: 600;
+}
+
 .btn {
-  color: whitesmoke;
+  color: #fff;
   background-color: var(--primary);
   border: none;
   text-align: center;
@@ -178,7 +196,18 @@ input,
   background: var(--primary-dark);
 }
 
-@media (max-width: 640px) {
+.upload-preview {
+  margin-top: 10px;
+  width: 100%;
+  max-height: 220px;
+  object-fit: cover;
+  border-radius: 12px;
+  border: 1px solid #d9e4dc;
+  display: none;
+}
+
+@media (max-width: 760px) {
+  .nav-shell,
   .nav {
     justify-content: center;
   }

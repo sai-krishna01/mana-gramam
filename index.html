@@ -8,7 +8,8 @@
   </head>
   <body>
     <header class="hero" id="hero">
-      <nav>
+      <nav class="nav-shell">
+        <div class="brand">Mana Gramam • Mana Palle</div>
         <div class="nav">
           <button class="action-link" type="button" onclick="contact()">Raise your issue</button>
         </div>
@@ -28,7 +29,7 @@
         </p>
       </section>
 
-      <h3>చెత్త లేని పరిశుభ్రమైన గ్రామాన్ని చూపిద్దాం</h3>
+        <h3>చెత్త లేని పరిశుభ్రమైన గ్రామాన్ని చూపిద్దాం</h3>
 
       <section class="story-card">
         <div class="card-2">
@@ -68,7 +69,6 @@
           వంటి వివిధ పద్ధతులను ఉపయోగించి పశువుల వ్యర్థాలను సమర్థవంతంగా నిర్వహించవచ్చు.
         </p>
       </section>
-    </main>
 
     <div id="login-form" class="login-form">
       <form action="#">
@@ -90,24 +90,36 @@
       </form>
     </div>
 
-    <div id="contactus" class="contactus">
-      <form id="form">
-        <h2 class="h2" onclick="closecontact()">✕</h2>
+            <div class="field">
+              <input type="text" required name="from_name" id="from_name" placeholder="enter your name" />
+            </div>
+            <div class="field">
+              <input type="email" required name="email_id" id="email_id" placeholder="enter your email" />
+            </div>
+            <div class="field">
+              <input type="text" required name="message" id="message" placeholder="raise your complaint" />
+            </div>
+            <div class="field">
+              <label for="issue-image" class="label">Upload issue image</label>
+              <input type="file" id="issue-image" accept="image/*" />
+              <img id="issue-preview" class="upload-preview" alt="Issue image preview" />
+            </div>
 
-        <div class="fieldhide">
-          <label for="to_name">to_name</label>
-          <input type="text" name="to_name" id="to_name" value="sai krishna" readonly />
+            <input type="submit" id="button" value="Raise your issue" class="btn" />
+          </form>
         </div>
+      </section>
 
-        <div class="field">
-          <input type="text" required name="from_name" id="from_name" placeholder="enter your name" />
+      <section id="login-page" class="page-section">
+        <h3>Login</h3>
+        <div class="login-form panel-visible">
+          <form action="#">
+            <div><input required type="email" placeholder="enter email" /></div>
+            <div><input required type="password" placeholder="enter password" /></div>
+            <button class="btn" type="submit">Login now</button>
+          </form>
         </div>
-        <div class="field">
-          <input type="email" required name="email_id" id="email_id" placeholder="enter your email" />
-        </div>
-        <div class="field">
-          <input type="text" required name="message" id="message" placeholder="raise your complaint" />
-        </div>
+      </section>
 
         <input type="submit" id="button" value="Raise your issue" class="btn" />
       </form>
