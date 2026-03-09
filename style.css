@@ -19,8 +19,7 @@ transition: 0.3s;
     display: none;
     transition: 0.3s;
 }
-..contactus{
-    display: flex;
+.contactus{
     flex-wrap: wrap;
 }
 input, .btn{
