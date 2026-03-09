@@ -24,7 +24,7 @@ body {
   padding: 20px clamp(16px, 4vw, 48px) 8px;
 }
 
-.nav-shell,
+nav,
 .hero-copy,
 .content,
 .ticker {
@@ -40,26 +40,15 @@ body {
   flex-wrap: wrap;
 }
 
-.brand {
-  font-weight: 700;
-  color: #0f4d26;
-}
-
-.nav {
-  display: flex;
-  gap: 8px;
-  flex-wrap: wrap;
-  justify-content: flex-end;
-}
-
 .action-link {
-  font-size: 14px;
+  text-decoration: none;
+  font-size: 15px;
   color: var(--primary);
   font-weight: 700;
   background: #ddf5e4;
   border: 1px solid #c4e8cf;
   border-radius: 999px;
-  padding: 8px 14px;
+  padding: 10px 16px;
   cursor: pointer;
 }
 
@@ -99,10 +88,7 @@ h1 {
   width: min(1100px, 92vw);
   margin-top: 18px;
   margin-bottom: 40px;
-}
-
-.page-section {
-  display: none;
+  display: grid;
   gap: 22px;
 }
 
@@ -226,7 +212,11 @@ input,
     justify-content: center;
   }
 
-  .three-col {
-    grid-template-columns: 1fr;
+  .story-card {
+    padding: 12px;
+  }
+
+  .par {
+    font-size: 0.95rem;
   }
 }

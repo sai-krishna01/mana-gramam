@@ -11,12 +11,7 @@
       <nav class="nav-shell">
         <div class="brand">Mana Gramam • Mana Palle</div>
         <div class="nav">
-          <button class="action-link" type="button" onclick="showPage('home-page')">Home</button>
-          <button class="action-link" type="button" onclick="showPage('about-page')">About</button>
-          <button class="action-link" type="button" onclick="showPage('gallery-page')">Gallery</button>
-          <button class="action-link" type="button" onclick="showPage('contact-page')">Raise your issue</button>
-          <button class="action-link" type="button" onclick="showPage('login-page')">Login</button>
-          <button class="action-link" type="button" onclick="showPage('signup-page')">Signup</button>
+          <button class="action-link" type="button" onclick="contact()">Raise your issue</button>
         </div>
       </nav>
 
@@ -26,85 +21,74 @@
       </div>
     </header>
 
-    <main id="content" class="content page active" data-page>
-      <section id="home-page" class="page-section active">
-        <section class="ticker" aria-label="Village mission statement">
-          <p>
-            Towards a Thriving Future: Maqdumpur's Journey — అభివృద్ధి చెందుతున్న భవిష్యత్తుకు:
-            మక్దూంపూర్ ప్రయాణం
-          </p>
-        </section>
+    <main id="content" class="content">
+      <section class="ticker" aria-label="Village mission statement">
+        <p>
+          Towards a Thriving Future: Maqdumpur's Journey — అభివృద్ధి చెందుతున్న భవిష్యత్తుకు:
+          మక్దూంపూర్ ప్రయాణం
+        </p>
+      </section>
 
         <h3>చెత్త లేని పరిశుభ్రమైన గ్రామాన్ని చూపిద్దాం</h3>
 
-        <section class="story-card">
-          <div class="card-2">
-            <img src="green (9).jpg" alt="Village clean-up and waste awareness" class="img" />
-          </div>
-          <p class="par">
-            భారతదేశంలో ప్లాస్టిక్ వాడకం విస్తృతంగా ఉంది, దీని ఫలితంగా సంవత్సరానికి సుమారు 9.4 మిలియన్
-            టన్నుల ప్లాస్టిక్ వ్యర్థాలు వస్తున్నాయి. పునర్వినియోగం పెంచడం, వేరు వేరు చెత్త సేకరణ,
-            మరియు స్థానిక అవగాహన కార్యక్రమాలు అవసరం.
-          </p>
-        </section>
-
-        <section class="story-card">
-          <div class="card-2">
-            <img src="green (10).jpg" alt="Medical waste awareness in the village" class="img" />
-          </div>
-          <p class="par">
-            వైద్య వ్యర్థాలు సరైన విధంగా వేరు చేసి, సురక్షితంగా తరలించి, శుద్ధి చేయాలి. గ్రామ స్థాయిలో
-            సమగ్ర పద్ధతులు అమలైతే ఆరోగ్యం మరియు పర్యావరణం రెండూ రక్షించబడతాయి.
-          </p>
-        </section>
+      <section class="story-card">
+        <div class="card-2">
+          <img src="green (9).jpg" alt="Village clean-up and waste awareness" class="img" />
+        </div>
+        <p class="par">
+          భారతదేశంలో ప్లాస్టిక్ వాడకం విస్తృతంగా ఉంది, దీని ఫలితంగా సంవత్సరానికి సుమారు 9.4
+          మిలియన్ టన్నుల ప్లాస్టిక్ వ్యర్థాలు వస్తున్నాయి. 30% కంటే తక్కువ ప్లాస్టిక్ మాత్రమే
+          పునర్వినియోగం చేయబడుతోంది. ఈ ప్లాస్టిక్ వ్యర్థాల నిర్వహణను తగ్గించడానికి భారత
+          ప్రభుత్వం అనేక చర్యలు తీసుకుంటోంది. వీటిలో ఒకేసారి వాడే ప్లాస్టిక్ సంచులపై నిషేధం,
+          కాటన్ మరియు కాగిత సంచుల వంటి ప్రత్యామ్నాయాలను ప్రోత్సహించడం వంటివి ఉన్నాయి.
+        </p>
       </section>
 
-      <section id="about-page" class="page-section">
-        <h3>About the Mission</h3>
-        <section class="story-card">
-          <p class="par">
-            Mana Gramam Mana Palle యొక్క లక్ష్యం — గ్రామం పరిశుభ్రంగా, పచ్చగా, ఆరోగ్యకరంగా ఉంచడం.
-            ప్రతి ఇంటి వద్ద చెత్త వర్గీకరణ, నీటి వనరుల పరిరక్షణ, మరియు బాధ్యతాయుత పౌర భాగస్వామ్యం ద్వారా
-            స్థిరమైన అభివృద్ధి సాధించడం.
-          </p>
-        </section>
-        <section class="story-card three-col">
-          <article>
-            <h4>Clean Streets</h4>
-            <p>రోజువారీ శుభ్రత డ్రైవులు మరియు పర్యవేక్షణ.</p>
-          </article>
-          <article>
-            <h4>Waste Segregation</h4>
-            <p>తడి/పొడి/హానికర చెత్త వేరు వేరు సేకరణ.</p>
-          </article>
-          <article>
-            <h4>Community Action</h4>
-            <p>యువత, మహిళా సంఘాలు, వాలంటీర్ల భాగస్వామ్యం.</p>
-          </article>
-        </section>
+      <section class="story-card">
+        <div class="card-2">
+          <img src="green (10).jpg" alt="Medical waste awareness in the village" class="img" />
+        </div>
+        <p class="par">
+          భారతదేశంలో సంవత్సరానికి సుమారు 4,50,000 టన్నుల వైద్య వ్యర్థాలు (సూదులు, సిరంజిలు,
+          రక్తం & శరీర ద్రవాలు, కాలం చెల్లిన మందులు, వ్యాధి నిర్ధారణ పరీక్షల వ్యర్థాలు) ఏర్పడుతున్నాయి.
+          ఈ వ్యర్థాలను సరైన రీతిలో నిర్వహించకపోతే అవి ప్రమాదకరంగా మారతాయి, ఎందుకంటే వాటిలో
+          కలుషిత కారకాలు మరియు హానికరమైన రసాయనాలు ఉండే అవకాశం ఉంది. వైద్య వ్యర్థాల నిర్వహణ కోసం
+          భారత ప్రభుత్వం మార్గదర్శకాలు జారీ చేసింది, వీటిలో వేరుచేయడం, నిల్వ ఉంచడం, రవాణా మరియు
+          శుద్ధీకరణ వంటివి ఉన్నాయి.
+        </p>
       </section>
 
-      <section id="gallery-page" class="page-section">
-        <h3>Village Gallery</h3>
-        <section class="story-card">
-          <p class="par">గ్రామ అభివృద్ధి ఫొటోలు, ప్రచార దృశ్యాలు మరియు కార్యక్రమాల చిత్రాలను ఇక్కడ చూడండి.</p>
-          <div class="gallery-grid" id="gallery-grid">
-            <img src="green (1).jpg" class="img gallery-item" alt="Gallery image 1" />
-            <img src="green (6).jpg" class="img gallery-item" alt="Gallery image 2" />
-            <img src="green (15).jpg" class="img gallery-item" alt="Gallery image 3" />
-            <img src="green (20).jpg" class="img gallery-item" alt="Gallery image 4" />
-          </div>
-        </section>
+      <section class="story-card">
+        <div class="card-2">
+          <img src="green (17).jpg" alt="Livestock waste management" class="img" />
+        </div>
+        <p class="par">
+          పశువుల వ్యర్థాల నిర్వహణ కూడా భారతదేశంలో ఒక ప్రధాన సమస్య. పశువుల వ్యర్థాలను సరిగ్గా
+          నిర్వహించకపోతే అవి నీటి వనరులు మరియు నేలను కలుషితం చేయడమే కాకుండా, తెగుళ్లను కూడా
+          ఆకర్షిస్తాయి. ఈ సమస్యను పరిష్కరించడానికి, ఎరువుగా మార్చడం, దహనం చేయడం, అనగాయిక్ జీర్ణక్రియ
+          వంటి వివిధ పద్ధతులను ఉపయోగించి పశువుల వ్యర్థాలను సమర్థవంతంగా నిర్వహించవచ్చు.
+        </p>
       </section>
 
-      <section id="contact-page" class="page-section">
-        <h3>Raise your issue</h3>
-        <div class="contactus panel-visible">
-          <form id="form">
-            <div class="fieldhide">
-              <label for="to_name">to_name</label>
-              <input type="text" name="to_name" id="to_name" value="sai krishna" readonly />
-            </div>
+    <div id="login-form" class="login-form">
+      <form action="#">
+        <h2 class="h2" onclick="closelogin()">✕</h2>
+        <div><input required type="email" placeholder="enter email" /></div>
+        <div><input required type="password" placeholder="enter password" /></div>
+        <button class="btn" type="submit">Login now</button>
+      </form>
+    </div>
+
+    <div id="signup-form" class="signup-form">
+      <form action="#">
+        <h2 class="h2" onclick="closesignup()">✕</h2>
+        <div><input type="text" placeholder="enter name" /></div>
+        <div><input required type="email" placeholder="enter email" /></div>
+        <div><input type="tel" placeholder="enter whatsapp number (optional)" /></div>
+        <div><input required type="password" placeholder="enter password" /></div>
+        <button class="btn" type="submit">Signup</button>
+      </form>
+    </div>
 
             <div class="field">
               <input type="text" required name="from_name" id="from_name" placeholder="enter your name" />
@@ -137,24 +121,16 @@
         </div>
       </section>
 
-      <section id="signup-page" class="page-section">
-        <h3>Signup</h3>
-        <div class="signup-form panel-visible">
-          <form action="#">
-            <div><input type="text" placeholder="enter name" /></div>
-            <div><input required type="email" placeholder="enter email" /></div>
-            <div><input type="tel" placeholder="enter whatsapp number (optional)" /></div>
-            <div><input required type="password" placeholder="enter password" /></div>
-            <button class="btn" type="submit">Signup</button>
-          </form>
-        </div>
-      </section>
-    </main>
+        <input type="submit" id="button" value="Raise your issue" class="btn" />
+      </form>
+    </div>
 
     <script src="app.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
     <script>
-      if (window.emailjs) emailjs.init('QD0PyZymzpU7akMs-');
+      if (window.emailjs) {
+        emailjs.init('QD0PyZymzpU7akMs-');
+      }
     </script>
   </body>
 </html>

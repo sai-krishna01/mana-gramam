@@ -21,12 +21,11 @@ if (issueImageInput && issuePreview) {
       return;
     }
 
-    const reader = new FileReader();
-    reader.onload = (loadEvent) => {
-      issuePreview.src = String(loadEvent.target?.result || '');
-      issuePreview.style.display = 'block';
-    };
-    reader.readAsDataURL(file);
+  if (hero) hero.style.display = 'block';
+  if (content) content.style.display = 'grid';
+
+  [login, signup, contact].forEach((section) => {
+    if (section) section.style.display = 'none';
   });
 }
 
