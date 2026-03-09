@@ -19,7 +19,7 @@ transition: 0.3s;
     display: none;
     transition: 0.3s;
 }
-..contactus{
+.contactus{
     display: flex;
     flex-wrap: wrap;
 }

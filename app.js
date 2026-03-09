@@ -23,7 +23,7 @@
       let cont=document.getElementById('content')
       cont.style.display='none'
       card.style.display='none'
-      contactus.style.display='block'
+      contactus.style.display='flex'
       }
 
       function closecontact(){
@@ -55,9 +55,10 @@
       }
 
       const btn = document.getElementById('button');
+      const form = document.getElementById('form');
 
-      document.getElementById('form')
-       .addEventListener('submit', function(event) {
+      if (form && btn) {
+        form.addEventListener('submit', function(event) {
          event.preventDefault();
       
          btn.value = 'Sending...';
@@ -73,7 +74,8 @@
             btn.value = 'Send Email';
             alert(JSON.stringify(err));
           });
-      });
+        });
+      }
 
 
   let img = document.getElementById('img');
