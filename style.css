@@ -178,7 +178,8 @@ h3 {
 }
 
 input,
-.btn {
+.btn,
+.label {
   width: 100%;
   min-height: 42px;
   padding: 0 12px;

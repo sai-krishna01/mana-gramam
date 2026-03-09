@@ -70,6 +70,8 @@ if (form && btn) {
     btn.value = 'Sending...';
     if (formStatus) formStatus.textContent = '';
 
+    btn.value = 'Sending...';
+
     if (!window.emailjs) {
       btn.value = 'Submit issue';
       if (formStatus) formStatus.textContent = 'Saved locally. Email service is unavailable right now.';
