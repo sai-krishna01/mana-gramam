@@ -17,7 +17,11 @@
           <button class="action-link" type="button" data-page-target="contact-page">Raise your issue</button>
           <button class="action-link" type="button" data-page-target="login-page">Login</button>
           <button class="action-link" type="button" data-page-target="signup-page">Signup</button>
+          <button class="action-link hidden" type="button" data-page-target="admin-page" id="admin-nav-btn">
+            Admin
+          </button>
         </div>
+        <div class="auth-chip" id="auth-chip" aria-live="polite"></div>
       </nav>
 
       <div class="hero-copy">
@@ -86,12 +90,22 @@
         <h3>Village Gallery</h3>
         <section class="story-card">
           <p class="par">గ్రామ అభివృద్ధి ఫొటోలు మరియు ప్రచార కార్యక్రమాల చిత్రాలు.</p>
-          <div class="gallery-grid">
+          <div class="gallery-grid" id="gallery-grid">
             <img src="green (1).jpg" class="img gallery-item" alt="Gallery image 1" />
             <img src="green (6).jpg" class="img gallery-item" alt="Gallery image 2" />
             <img src="green (15).jpg" class="img gallery-item" alt="Gallery image 3" />
             <img src="green (20).jpg" class="img gallery-item" alt="Gallery image 4" />
           </div>
+        </section>
+        <section class="story-card" id="gallery-upload-panel">
+          <h4>Upload to community gallery</h4>
+          <p class="par">Founder can grant image upload access to members from Admin page.</p>
+          <div class="field">
+            <label for="gallery-image" class="label">Select image</label>
+            <input type="file" id="gallery-image" accept="image/*" />
+          </div>
+          <button class="btn" id="gallery-upload-btn" type="button">Upload image</button>
+          <p class="form-status" id="gallery-upload-status" aria-live="polite"></p>
         </section>
       </section>
 
@@ -111,7 +125,7 @@
               <input type="email" required name="email_id" id="email_id" placeholder="enter your email" />
             </div>
             <div class="field">
-              <input type="text" required name="message" id="message" placeholder="raise your complaint" />
+              <textarea required name="message" id="message" placeholder="raise your complaint"></textarea>
             </div>
             <div class="field">
               <label for="issue-image" class="label">Upload issue image</label>
@@ -128,10 +142,11 @@
       <section id="login-page" class="page-section">
         <h3>Login</h3>
         <div class="login-form panel-visible">
-          <form action="#">
-            <div><input required type="email" placeholder="enter email" /></div>
-            <div><input required type="password" placeholder="enter password" /></div>
+          <form id="login-form" action="#">
+            <div><input required type="email" id="login-email" placeholder="enter email" /></div>
+            <div><input required type="password" id="login-password" placeholder="enter password" /></div>
             <button class="btn" type="submit">Login now</button>
+            <p class="form-status" id="login-status" aria-live="polite"></p>
           </form>
         </div>
       </section>
@@ -139,20 +154,31 @@
       <section id="signup-page" class="page-section">
         <h3>Signup</h3>
         <div class="signup-form panel-visible">
-          <form action="#">
-            <div><input type="text" placeholder="enter name" /></div>
-            <div><input required type="email" placeholder="enter email" /></div>
-            <div><input type="tel" placeholder="enter whatsapp number (optional)" /></div>
-            <div><input required type="password" placeholder="enter password" /></div>
+          <form id="signup-form" action="#">
+            <div><input type="text" id="signup-name" required placeholder="enter name" /></div>
+            <div><input required type="email" id="signup-email" placeholder="enter email" /></div>
+            <div><input type="tel" id="signup-phone" placeholder="enter whatsapp number (optional)" /></div>
+            <div><input required type="password" id="signup-password" placeholder="enter password" /></div>
             <button class="btn" type="submit">Signup</button>
+            <p class="form-status" id="signup-status" aria-live="polite"></p>
           </form>
         </div>
+      </section>
+
+      <section id="admin-page" class="page-section">
+        <h3>Founder Admin</h3>
+        <section class="story-card">
+          <p class="par">Manage user access. Founder can make admins, and admins/founder can control image upload access.</p>
+          <p class="small-text">Founder login: dadisaikrishna39@gmail.com / Founder@123</p>
+          <div id="admin-users" class="admin-users"></div>
+          <p class="form-status" id="admin-status" aria-live="polite"></p>
+        </section>
       </section>
     </main>
 
     <script type="module">
       import { initializeApp } from 'https://www.gstatic.com/firebasejs/12.10.0/firebase-app.js';
-      import { getAnalytics } from 'https://www.gstatic.com/firebasejs/12.10.0/firebase-analytics.js';
+      import { getAnalytics, isSupported } from 'https://www.gstatic.com/firebasejs/12.10.0/firebase-analytics.js';
       import {
         getFirestore,
         addDoc,
@@ -170,12 +196,24 @@
         measurementId: 'G-TELNVLJ4H1',
       };
 
-      const app = initializeApp(firebaseConfig);
-      getAnalytics(app);
-      const db = getFirestore(app);
+      let db = null;
+
+      try {
+        const app = initializeApp(firebaseConfig);
+        db = getFirestore(app);
+
+        const analyticsSupported = await isSupported();
+        if (analyticsSupported) {
+          getAnalytics(app);
+        }
+      } catch (error) {
+        console.warn('Firebase init failed; issue submission will use fallback methods.', error);
+      }
 
       window.firebaseIssueService = {
         submitIssueToFirebase: async (payload) => {
+          if (!db) throw new Error('firebase-not-ready');
+
           await addDoc(collection(db, 'issues'), {
             ...payload,
             createdAtServer: serverTimestamp(),
