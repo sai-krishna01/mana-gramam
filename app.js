@@ -8,8 +8,8 @@ const STORAGE_KEYS = {
 };
 
 const founderSeed = {
-  name: 'Founder Admin',
-  email: 'founder@managramam.org',
+  name: 'Dadi Sai Krishna',
+  email: 'dadisaikrishna39@gmail.com',
   phone: '',
   password: 'Founder@123',
   role: 'founder',
@@ -75,10 +75,24 @@ function setUsers(users) {
 
 function ensureFounderUser() {
   const users = getUsers();
-  const hasFounder = users.some((user) => user.role === 'founder');
-  if (hasFounder) return;
-  users.push(founderSeed);
-  setUsers(users);
+
+  const migratedUsers = users.map((user) => {
+    if (user.role === 'founder' && user.email.toLowerCase() !== founderSeed.email.toLowerCase()) {
+      return {
+        ...user,
+        name: founderSeed.name,
+        email: founderSeed.email,
+      };
+    }
+    return user;
+  });
+
+  const hasFounder = migratedUsers.some((user) => user.role === 'founder');
+  if (!hasFounder) {
+    migratedUsers.push(founderSeed);
+  }
+
+  setUsers(migratedUsers);
 }
 
 function getSessionUser() {
@@ -95,7 +109,15 @@ function setSessionUser(user) {
 
 function canUploadImages(user) {
   if (!user) return false;
-  return user.role === 'founder' || Boolean(user.permissions?.canUploadImages);
+  return user.role === 'founder' || user.role === 'admin' || Boolean(user.permissions?.canUploadImages);
+}
+
+function canManageUsers(user) {
+  return user && (user.role === 'founder' || user.role === 'admin');
+}
+
+function canPromoteAdmins(user) {
+  return user && user.role === 'founder';
 }
 
 const authChip = document.getElementById('auth-chip');
@@ -121,12 +143,15 @@ function setStatus(el, message) {
 function syncSessionWithUsers() {
   const session = getSessionUser();
   if (!session) return null;
+
   const users = getUsers();
   const persisted = users.find((u) => u.email.toLowerCase() === session.email.toLowerCase());
+
   if (!persisted) {
     setSessionUser(null);
     return null;
   }
+
   setSessionUser(persisted);
   return persisted;
 }
@@ -150,7 +175,7 @@ function renderAuthUI() {
   }
 
   if (adminNavBtn) {
-    adminNavBtn.classList.toggle('hidden', !(user && user.role === 'founder'));
+    adminNavBtn.classList.toggle('hidden', !canManageUsers(user));
   }
 
   if (galleryUploadPanel) {
@@ -160,7 +185,7 @@ function renderAuthUI() {
       setStatus(
         galleryUploadStatus,
         user
-          ? 'You do not have permission to upload images. Contact founder admin.'
+          ? 'You do not have permission to upload images. Contact founder/admin.'
           : 'Please login first. Founder can grant upload access.'
       );
     } else {
@@ -175,13 +200,14 @@ function renderAdminUsers() {
   if (!adminUsers) return;
 
   const session = getSessionUser();
-  if (!session || session.role !== 'founder') {
-    adminUsers.innerHTML = '<p class="par">Only founder admin can manage access.</p>';
+  if (!canManageUsers(session)) {
+    adminUsers.innerHTML = '<p class="par">Only founder/admin can manage access.</p>';
     return;
   }
 
   const users = getUsers();
   const manageable = users.filter((u) => u.role !== 'founder');
+
   if (!manageable.length) {
     adminUsers.innerHTML = '<p class="par">No members yet. Ask users to sign up first.</p>';
     return;
@@ -189,37 +215,83 @@ function renderAdminUsers() {
 
   const rows = manageable
     .map((u, index) => {
-      const hasAccess = Boolean(u.permissions?.canUploadImages);
-      const btnLabel = hasAccess ? 'Revoke upload access' : 'Grant upload access';
+      const hasAccess = canUploadImages(u);
+      const canPromote = canPromoteAdmins(session);
+      const roleLabel = u.role;
+      const uploadLabel = hasAccess ? 'Revoke upload access' : 'Grant upload access';
+      const roleLabelBtn = u.role === 'admin' ? 'Make member' : 'Make admin';
+
       return `<div class="admin-row">
           <div>
             <p><strong>${u.name}</strong> (${u.email})</p>
-            <p class="small-text">Upload permission: ${hasAccess ? 'Yes' : 'No'}</p>
+            <p class="small-text">Role: ${roleLabel} • Upload access: ${hasAccess ? 'Yes' : 'No'}</p>
           </div>
-          <button type="button" class="btn admin-toggle" data-user-index="${index}">${btnLabel}</button>
+          <div class="admin-actions">
+            <button type="button" class="btn admin-toggle-upload" data-user-index="${index}">${uploadLabel}</button>
+            <button type="button" class="btn admin-toggle-role ${canPromote ? '' : 'disabled-btn'}" data-user-index="${index}" ${canPromote ? '' : 'disabled'}>${roleLabelBtn}</button>
+          </div>
         </div>`;
     })
     .join('');
 
   adminUsers.innerHTML = rows;
 
-  adminUsers.querySelectorAll('.admin-toggle').forEach((btn) => {
+  adminUsers.querySelectorAll('.admin-toggle-upload').forEach((btn) => {
     btn.addEventListener('click', () => {
       const index = Number(btn.dataset.userIndex);
       const allUsers = getUsers();
-      const nonFounderIndexes = allUsers
-        .map((u, i) => ({ user: u, i }))
-        .filter((entry) => entry.user.role !== 'founder');
+      const nonFounderIndexes = allUsers.map((u, i) => ({ user: u, i })).filter((entry) => entry.user.role !== 'founder');
 
       const targetRef = nonFounderIndexes[index];
       if (!targetRef) return;
 
       const targetUser = allUsers[targetRef.i];
-      const current = Boolean(targetUser.permissions?.canUploadImages);
+      const current = canUploadImages(targetUser);
+
       targetUser.permissions = {
         ...(targetUser.permissions || {}),
         canUploadImages: !current,
       };
+
+      if (targetUser.role === 'admin' && current) {
+        targetUser.permissions.canUploadImages = true;
+      }
+
+      allUsers[targetRef.i] = targetUser;
+      setUsers(allUsers);
+      setStatus(adminStatus, `Updated upload permission for ${targetUser.name}.`);
+
+      const currentSession = getSessionUser();
+      if (currentSession?.email?.toLowerCase() === targetUser.email.toLowerCase()) {
+        setSessionUser(targetUser);
+      }
+
+      renderAuthUI();
+    });
+  });
+
+  adminUsers.querySelectorAll('.admin-toggle-role').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const sessionUser = getSessionUser();
+      if (!canPromoteAdmins(sessionUser)) {
+        setStatus(adminStatus, 'Only founder can make admins.');
+        return;
+      }
+
+      const index = Number(btn.dataset.userIndex);
+      const allUsers = getUsers();
+      const nonFounderIndexes = allUsers.map((u, i) => ({ user: u, i })).filter((entry) => entry.user.role !== 'founder');
+      const targetRef = nonFounderIndexes[index];
+      if (!targetRef) return;
+
+      const targetUser = allUsers[targetRef.i];
+      targetUser.role = targetUser.role === 'admin' ? 'member' : 'admin';
+      if (targetUser.role === 'admin') {
+        targetUser.permissions = {
+          ...(targetUser.permissions || {}),
+          canUploadImages: true,
+        };
+      }
 
       allUsers[targetRef.i] = targetUser;
       setUsers(allUsers);
@@ -229,7 +301,7 @@ function renderAdminUsers() {
         setSessionUser(targetUser);
       }
 
-      setStatus(adminStatus, `Updated upload permission for ${targetUser.name}.`);
+      setStatus(adminStatus, `Updated role for ${targetUser.name} to ${targetUser.role}.`);
       renderAuthUI();
     });
   });
@@ -342,7 +414,7 @@ if (galleryUploadBtn && galleryImageInput) {
   galleryUploadBtn.addEventListener('click', () => {
     const session = getSessionUser();
     if (!canUploadImages(session)) {
-      setStatus(galleryUploadStatus, 'Access denied. Founder admin must grant upload permission.');
+      setStatus(galleryUploadStatus, 'Access denied. Founder/admin must grant upload permission.');
       return;
     }
 
