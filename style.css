@@ -69,6 +69,22 @@ body {
   border-color: var(--primary);
 }
 
+.auth-chip {
+  font-size: 0.9rem;
+  color: var(--muted);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.chip-btn {
+  border: 1px solid #bad8c3;
+  background: #f1faf4;
+  border-radius: 999px;
+  padding: 6px 10px;
+  cursor: pointer;
+}
+
 .hero-copy {
   margin-top: 20px;
   text-align: center;
@@ -178,14 +194,21 @@ h3 {
 }
 
 input,
+textarea,
 .btn,
 .label {
   width: 100%;
   min-height: 42px;
-  padding: 0 12px;
+  padding: 10px 12px;
   margin-top: 8px;
   border-radius: 12px;
   border: 1px solid #d9e4dc;
+  font: inherit;
+}
+
+textarea {
+  resize: vertical;
+  min-height: 96px;
 }
 
 .label {
@@ -223,13 +246,40 @@ input,
   font-size: 0.95rem;
 }
 
+.admin-users {
+  margin-top: 14px;
+  display: grid;
+  gap: 10px;
+}
+
+.admin-row {
+  border: 1px solid #dce9e0;
+  border-radius: 12px;
+  padding: 12px;
+  display: grid;
+  gap: 12px;
+  align-items: center;
+  grid-template-columns: 1fr 220px;
+}
+
+.small-text {
+  margin: 4px 0 0;
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+.hidden {
+  display: none !important;
+}
+
 @media (max-width: 760px) {
   .nav-shell,
   .nav {
     justify-content: center;
   }
 
-  .three-col {
+  .three-col,
+  .admin-row {
     grid-template-columns: 1fr;
   }
 }
