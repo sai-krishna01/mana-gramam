@@ -1,6 +1,23 @@
 const sections = Array.from(document.querySelectorAll('.page-section'));
 const navButtons = Array.from(document.querySelectorAll('[data-page-target]'));
 
+const STORAGE_KEYS = {
+  users: 'mg_users',
+  session: 'mg_session',
+  galleryUploads: 'mg_gallery_uploads',
+};
+
+const founderSeed = {
+  name: 'Founder Admin',
+  email: 'founder@managramam.org',
+  phone: '',
+  password: 'Founder@123',
+  role: 'founder',
+  permissions: {
+    canUploadImages: true,
+  },
+};
+
 function showPage(pageId) {
   let found = false;
 
@@ -35,16 +52,188 @@ if (window.emailjs) {
   emailjs.init('QD0PyZymzpU7akMs-');
 }
 
-const btn = document.getElementById('button');
-const form = document.getElementById('form');
-const formStatus = document.getElementById('form-status');
-const issueImageInput = document.getElementById('issue-image');
-const issuePreview = document.getElementById('issue-preview');
-
-function setStatus(message) {
-  if (formStatus) formStatus.textContent = message;
+function getJSON(key, fallback) {
+  try {
+    const parsed = JSON.parse(localStorage.getItem(key) || '');
+    return parsed ?? fallback;
+  } catch (_error) {
+    return fallback;
+  }
 }
 
+function setJSON(key, value) {
+  localStorage.setItem(key, JSON.stringify(value));
+}
+
+function getUsers() {
+  return getJSON(STORAGE_KEYS.users, []);
+}
+
+function setUsers(users) {
+  setJSON(STORAGE_KEYS.users, users);
+}
+
+function ensureFounderUser() {
+  const users = getUsers();
+  const hasFounder = users.some((user) => user.role === 'founder');
+  if (hasFounder) return;
+  users.push(founderSeed);
+  setUsers(users);
+}
+
+function getSessionUser() {
+  return getJSON(STORAGE_KEYS.session, null);
+}
+
+function setSessionUser(user) {
+  if (!user) {
+    localStorage.removeItem(STORAGE_KEYS.session);
+    return;
+  }
+  setJSON(STORAGE_KEYS.session, user);
+}
+
+function canUploadImages(user) {
+  if (!user) return false;
+  return user.role === 'founder' || Boolean(user.permissions?.canUploadImages);
+}
+
+const authChip = document.getElementById('auth-chip');
+const adminNavBtn = document.getElementById('admin-nav-btn');
+const adminUsers = document.getElementById('admin-users');
+const adminStatus = document.getElementById('admin-status');
+
+const signupForm = document.getElementById('signup-form');
+const loginForm = document.getElementById('login-form');
+const signupStatus = document.getElementById('signup-status');
+const loginStatus = document.getElementById('login-status');
+
+const galleryUploadPanel = document.getElementById('gallery-upload-panel');
+const galleryImageInput = document.getElementById('gallery-image');
+const galleryUploadBtn = document.getElementById('gallery-upload-btn');
+const galleryUploadStatus = document.getElementById('gallery-upload-status');
+const galleryGrid = document.getElementById('gallery-grid');
+
+function setStatus(el, message) {
+  if (el) el.textContent = message;
+}
+
+function syncSessionWithUsers() {
+  const session = getSessionUser();
+  if (!session) return null;
+  const users = getUsers();
+  const persisted = users.find((u) => u.email.toLowerCase() === session.email.toLowerCase());
+  if (!persisted) {
+    setSessionUser(null);
+    return null;
+  }
+  setSessionUser(persisted);
+  return persisted;
+}
+
+function handleLogout() {
+  setSessionUser(null);
+  renderAuthUI();
+  showPage('home-page');
+}
+
+function renderAuthUI() {
+  const user = syncSessionWithUsers();
+
+  if (authChip) {
+    if (user) {
+      authChip.innerHTML = `Logged in as <strong>${user.name}</strong> (${user.role}) <button type="button" id="logout-btn" class="chip-btn">Logout</button>`;
+      document.getElementById('logout-btn')?.addEventListener('click', handleLogout);
+    } else {
+      authChip.textContent = 'Not logged in';
+    }
+  }
+
+  if (adminNavBtn) {
+    adminNavBtn.classList.toggle('hidden', !(user && user.role === 'founder'));
+  }
+
+  if (galleryUploadPanel) {
+    const access = canUploadImages(user);
+    galleryUploadPanel.classList.toggle('hidden', !access);
+    if (!access) {
+      setStatus(
+        galleryUploadStatus,
+        user
+          ? 'You do not have permission to upload images. Contact founder admin.'
+          : 'Please login first. Founder can grant upload access.'
+      );
+    } else {
+      setStatus(galleryUploadStatus, 'You can upload community images.');
+    }
+  }
+
+  renderAdminUsers();
+}
+
+function renderAdminUsers() {
+  if (!adminUsers) return;
+
+  const session = getSessionUser();
+  if (!session || session.role !== 'founder') {
+    adminUsers.innerHTML = '<p class="par">Only founder admin can manage access.</p>';
+    return;
+  }
+
+  const users = getUsers();
+  const manageable = users.filter((u) => u.role !== 'founder');
+  if (!manageable.length) {
+    adminUsers.innerHTML = '<p class="par">No members yet. Ask users to sign up first.</p>';
+    return;
+  }
+
+  const rows = manageable
+    .map((u, index) => {
+      const hasAccess = Boolean(u.permissions?.canUploadImages);
+      const btnLabel = hasAccess ? 'Revoke upload access' : 'Grant upload access';
+      return `<div class="admin-row">
+          <div>
+            <p><strong>${u.name}</strong> (${u.email})</p>
+            <p class="small-text">Upload permission: ${hasAccess ? 'Yes' : 'No'}</p>
+          </div>
+          <button type="button" class="btn admin-toggle" data-user-index="${index}">${btnLabel}</button>
+        </div>`;
+    })
+    .join('');
+
+  adminUsers.innerHTML = rows;
+
+  adminUsers.querySelectorAll('.admin-toggle').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const index = Number(btn.dataset.userIndex);
+      const allUsers = getUsers();
+      const nonFounderIndexes = allUsers
+        .map((u, i) => ({ user: u, i }))
+        .filter((entry) => entry.user.role !== 'founder');
+
+      const targetRef = nonFounderIndexes[index];
+      if (!targetRef) return;
+
+      const targetUser = allUsers[targetRef.i];
+      const current = Boolean(targetUser.permissions?.canUploadImages);
+      targetUser.permissions = {
+        ...(targetUser.permissions || {}),
+        canUploadImages: !current,
+      };
+
+      allUsers[targetRef.i] = targetUser;
+      setUsers(allUsers);
+
+      const currentSession = getSessionUser();
+      if (currentSession?.email?.toLowerCase() === targetUser.email.toLowerCase()) {
+        setSessionUser(targetUser);
+      }
+
+      setStatus(adminStatus, `Updated upload permission for ${targetUser.name}.`);
+      renderAuthUI();
+    });
+  });
+}
 
 function withTimeout(promise, ms) {
   return Promise.race([
@@ -52,6 +241,12 @@ function withTimeout(promise, ms) {
     new Promise((_, reject) => setTimeout(() => reject(new Error('timeout')), ms)),
   ]);
 }
+
+const issueForm = document.getElementById('form');
+const issueBtn = document.getElementById('button');
+const formStatus = document.getElementById('form-status');
+const issueImageInput = document.getElementById('issue-image');
+const issuePreview = document.getElementById('issue-preview');
 
 function resetIssuePreview() {
   if (!issuePreview) return;
@@ -76,19 +271,21 @@ if (issueImageInput && issuePreview) {
   });
 }
 
-if (form && btn) {
-  form.addEventListener('submit', async (event) => {
+if (issueForm && issueBtn) {
+  issueForm.addEventListener('submit', async (event) => {
     event.preventDefault();
-    btn.value = 'Submitting...';
-    setStatus('Submitting your issue...');
+    issueBtn.value = 'Submitting...';
+    setStatus(formStatus, 'Submitting your issue...');
 
+    const currentUser = getSessionUser();
     const payload = {
-      from_name: document.getElementById('from_name')?.value?.trim() || '',
-      email_id: document.getElementById('email_id')?.value?.trim() || '',
+      from_name: document.getElementById('from_name')?.value?.trim() || currentUser?.name || '',
+      email_id: document.getElementById('email_id')?.value?.trim() || currentUser?.email || '',
       message: document.getElementById('message')?.value?.trim() || '',
       image_name: issueImageInput?.files?.[0]?.name || '',
       createdAt: new Date().toISOString(),
       source: 'website-form',
+      reporterRole: currentUser?.role || 'guest',
     };
 
     let submitted = false;
@@ -97,19 +294,19 @@ if (form && btn) {
       try {
         await withTimeout(window.firebaseIssueService.submitIssueToFirebase(payload), 6000);
         submitted = true;
-        setStatus('Issue submitted to Firebase successfully.');
-      } catch (error) {
-        setStatus('Firebase submit failed. Trying email fallback...');
+        setStatus(formStatus, 'Issue submitted to Firebase successfully.');
+      } catch (_error) {
+        setStatus(formStatus, 'Firebase submit failed. Trying email fallback...');
       }
     }
 
     if (!submitted && window.emailjs) {
       try {
-        await withTimeout(emailjs.sendForm('service_eadh9rd', 'template_4c4536t', form), 6000);
+        await withTimeout(emailjs.sendForm('service_eadh9rd', 'template_4c4536t', issueForm), 6000);
         submitted = true;
-        setStatus('Issue submitted successfully via email.');
-      } catch (error) {
-        setStatus('Email submit failed. Saving locally...');
+        setStatus(formStatus, 'Issue submitted successfully via email.');
+      } catch (_error) {
+        setStatus(formStatus, 'Email submit failed. Saving locally...');
       }
     }
 
@@ -117,11 +314,118 @@ if (form && btn) {
       const existing = JSON.parse(localStorage.getItem('pendingIssues') || '[]');
       existing.push(payload);
       localStorage.setItem('pendingIssues', JSON.stringify(existing));
-      setStatus('Could not reach server. Issue saved locally on this device.');
+      setStatus(formStatus, 'Could not reach server. Issue saved locally on this device.');
     }
 
-    btn.value = 'Submit issue';
-    form.reset();
+    issueBtn.value = 'Submit issue';
+    issueForm.reset();
     resetIssuePreview();
   });
 }
+
+function renderGalleryUploads() {
+  if (!galleryGrid) return;
+  galleryGrid.querySelectorAll('[data-uploaded="true"]').forEach((node) => node.remove());
+
+  const uploads = getJSON(STORAGE_KEYS.galleryUploads, []);
+  uploads.forEach((item, index) => {
+    const image = document.createElement('img');
+    image.src = item.dataUrl;
+    image.className = 'img gallery-item';
+    image.alt = `Community upload ${index + 1} by ${item.uploadedBy}`;
+    image.setAttribute('data-uploaded', 'true');
+    galleryGrid.appendChild(image);
+  });
+}
+
+if (galleryUploadBtn && galleryImageInput) {
+  galleryUploadBtn.addEventListener('click', () => {
+    const session = getSessionUser();
+    if (!canUploadImages(session)) {
+      setStatus(galleryUploadStatus, 'Access denied. Founder admin must grant upload permission.');
+      return;
+    }
+
+    const [file] = galleryImageInput.files || [];
+    if (!file) {
+      setStatus(galleryUploadStatus, 'Please choose an image first.');
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      const uploads = getJSON(STORAGE_KEYS.galleryUploads, []);
+      uploads.unshift({
+        dataUrl: String(event.target?.result || ''),
+        uploadedBy: session.name,
+        uploadedAt: new Date().toISOString(),
+      });
+      setJSON(STORAGE_KEYS.galleryUploads, uploads.slice(0, 40));
+      setStatus(galleryUploadStatus, 'Image uploaded to local gallery successfully.');
+      galleryImageInput.value = '';
+      renderGalleryUploads();
+    };
+    reader.readAsDataURL(file);
+  });
+}
+
+if (signupForm) {
+  signupForm.addEventListener('submit', (event) => {
+    event.preventDefault();
+    const name = document.getElementById('signup-name')?.value?.trim();
+    const email = document.getElementById('signup-email')?.value?.trim().toLowerCase();
+    const phone = document.getElementById('signup-phone')?.value?.trim() || '';
+    const password = document.getElementById('signup-password')?.value || '';
+
+    if (!name || !email || !password) {
+      setStatus(signupStatus, 'Please fill required fields.');
+      return;
+    }
+
+    const users = getUsers();
+    if (users.some((u) => u.email.toLowerCase() === email)) {
+      setStatus(signupStatus, 'This email is already registered. Please login.');
+      return;
+    }
+
+    users.push({
+      name,
+      email,
+      phone,
+      password,
+      role: 'member',
+      permissions: {
+        canUploadImages: false,
+      },
+    });
+    setUsers(users);
+    setStatus(signupStatus, 'Signup successful. You can now login.');
+    signupForm.reset();
+  });
+}
+
+if (loginForm) {
+  loginForm.addEventListener('submit', (event) => {
+    event.preventDefault();
+    const email = document.getElementById('login-email')?.value?.trim().toLowerCase();
+    const password = document.getElementById('login-password')?.value || '';
+
+    const users = getUsers();
+    const user = users.find((u) => u.email.toLowerCase() === email && u.password === password);
+
+    if (!user) {
+      setStatus(loginStatus, 'Invalid email or password.');
+      return;
+    }
+
+    setSessionUser(user);
+    setStatus(loginStatus, `Welcome ${user.name}.`);
+    loginForm.reset();
+    renderAuthUI();
+    showPage('home-page');
+  });
+}
+
+ensureFounderUser();
+renderGalleryUploads();
+renderAuthUI();
